@@ -22,16 +22,11 @@ let extract_matches regex input =
   in
   extract [] 0
 
-let print_return xs =
-  List.iter (print_endline) xs;
-  xs
-
 let part1 =
   read_lines "input.txt"
   |> String.concat ""
   |> extract_matches {|mul([0-9]+,[0-9]+)|}
   |> List.concat_map (extract_matches {|[0-9]+,[0-9]+|})
-  |> print_return
   |> List.map (fun s ->
       String.split_on_char ',' s
       |> List.map (int_of_string)
