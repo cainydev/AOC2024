@@ -1,3 +1,5 @@
+open Batteries
+
 let read_lines file =
   let ic = open_in file in
   let rec read_lines_rec acc = 
@@ -9,7 +11,10 @@ let read_lines file =
       List.rev acc
   in read_lines_rec []
 
-let part1 = read_lines "input.txt" |> List.length
+let parse_input (lines: string list): (int list) list = lines
+|> List.map (List.map int_of_string % String.split_on_char ' ')
+
+let part1 = read_lines "input.txt" |> parse_input |> List.length
 
 let part2 = 0
 
