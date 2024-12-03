@@ -15,4 +15,4 @@
  (name Day02)
  (synopsis "AOC Solution for day 02")
  (description "")
- (depends ocaml))
+ (depends ocaml batteries))

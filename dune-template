@@ -15,4 +15,4 @@
  (name Day%DAY%)
  (synopsis "AOC Solution for day %DAY%")
  (description "")
- (depends ocaml))
+ (depends ocaml batteries))
