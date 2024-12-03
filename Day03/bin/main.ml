@@ -47,7 +47,6 @@ let part2 = read_lines "input.txt"
   |> extract_matches {|mul([0-9]+,[0-9]+)\|don't()\|do()|}
   |> filter_muls
   |> List.concat_map (extract_matches {|[0-9]+,[0-9]+|})
-  |> print_return
   |> List.map (fun s ->
       String.split_on_char ',' s
       |> List.map (int_of_string)
