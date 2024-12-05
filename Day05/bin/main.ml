@@ -26,10 +26,7 @@ let update_is_valid rules update =
   List.for_all (fun (this, beforethat) ->
     let index1 = List.index_of this update in
     let index2 = List.index_of beforethat update in
-    match index1, index2 with
-    | None, None -> true
-    | Some _, None | None, Some _ -> true
-    | Some i, Some j -> i < j
+    match index1, index2 with Some i, Some j -> i < j | _ -> true
   ) rules
 
 let part1 =
@@ -40,7 +37,7 @@ let part1 =
   |> List.map (fun valid_rule ->
       let middle_index = (List.length valid_rule / 2) in
       List.at valid_rule middle_index)
-  |> List.fold_left (+) 0
+  |> List.sum
 
 let sort_function_by_rules rules = fun a b ->
   match List.find_opt (fun r -> r = (a, b) || r = (b, a)) rules with
@@ -56,7 +53,7 @@ let part2 =
   |> List.map (fun valid_rule ->
       let middle_index = (List.length valid_rule / 2) in
       List.at valid_rule middle_index)
-  |> List.fold_left (+) 0
+  |> List.sum
 
 let () =
   Printf.printf "Part 1: %i\n" part1;
