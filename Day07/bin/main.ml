@@ -25,14 +25,19 @@ let eq_is_possible (r, nums) =
     | (y::ys) -> check (acc + y) ys || check (acc * y) ys
   in check (List.hd nums) (List.tl nums)
   
-let concat_ints x y =
-  (*x * int_of_float (10. ** (log10 (float_of_int y) |> Float.ceil)) + y*)
-  int_of_string (string_of_int x ^ string_of_int y)
+let concat_ints a b =
+  if b < 10 then a * 10 + b
+  else if b < 100 then a * 100 + b
+  else if b < 1000 then a * 1000 + b
+  else
+    let digits_b = Float.floor (float_of_int b |> log10) +. 1. in
+    a * int_of_float (10. ** digits_b) + b
 
 let eq_is_possible_with_concat (r, nums) =
   let rec check acc = function
     | [] -> acc = r
     | (y::ys) ->
+          if acc > r then false else
           check (acc + y) ys
           || check (acc * y) ys
           || check (concat_ints acc y) ys
