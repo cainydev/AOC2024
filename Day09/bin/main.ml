@@ -11,11 +11,6 @@ let read_lines file =
       List.rev acc
   in read_lines_rec []
 
-type memory =
-  | Free of int
-  | File of int * string
-  | Fragmentation of memory list
-
 let seq_to_memory seq =
   let block_id = ref 0 in
   List.mapi (fun i x ->
@@ -26,16 +21,6 @@ let seq_to_memory seq =
         List.init x (Fun.const None)
       end 
   ) seq |> List.concat |> Array.of_list
-
-let print_mem mem =
-  let s = Array.map (function None -> "." | Some c -> string_of_int c) mem in
-  Array.iter (print_string) s;
-  print_endline "";
-  mem
-
-let print_list seq =
-  List.iter (print_int) seq;
-  seq
 
 let checksum mem =
   let pos = ref 0 in
@@ -86,7 +71,7 @@ let checksum_2 mem =
 
     while !length_of_space < !length && !j <= (!c_pos - !length) do
       (match !c_mem.(!j) with
-      | Some n -> length_of_space := 0
+      | Some _ -> length_of_space := 0
       | None -> length_of_space := !length_of_space + 1);
 
       j := !j + 1
