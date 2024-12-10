@@ -1,4 +1,0 @@
-(executable
- (public_name Day07)
- (name main)
- (libraries Day07 batteries))
