@@ -11,22 +11,19 @@ let parse_input filename =
     |> List.map (fun s -> int_of_string s, 1)
   in IntMap.of_list start
 
-let reset = const 0
-let incr n = (+) n
-
 let blink map =
   IntMap.fold (fun x n m ->
     match x with
-    | 0 -> m |> IntMap.modify_def 0 1 (incr n)
+    | 0 -> m |> IntMap.modify_def 0 1 ((+) n)
     | _ ->
         let s = string_of_int x in
         let l = String.length s in
         if l mod 2 = 0 then
           let first = String.sub s 0 (l / 2) |> int_of_string in
           let snd = String.sub s (l / 2) (l / 2) |> int_of_string in
-          m |> IntMap.modify_def 0 first (incr n)
-            |> IntMap.modify_def 0 snd (incr n)
-        else m |> IntMap.modify_def 0 (x * 2024) (incr n)
+          m |> IntMap.modify_def 0 first ((+) n)
+            |> IntMap.modify_def 0 snd ((+) n)
+        else m |> IntMap.modify_def 0 (x * 2024) ((+) n)
   ) map (IntMap.empty)
 
 let part1 =
