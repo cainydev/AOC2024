@@ -11,7 +11,6 @@ let parse_input filename =
     |> List.map (fun s -> int_of_string s, 1)
   in IntMap.of_list start
 
-
 let reset = const 0
 let incr n = (+) n
 
