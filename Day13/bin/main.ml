@@ -10,14 +10,15 @@ let extract_nums s =
   then failwith "Only can do pairs of 2 numbers"
   else (float_of_string @@ List.at nums 0, float_of_string @@ List.at nums 1)
 
-let parse_input input = List.filter_map (fun lines ->
-  match lines with
-  | [a; b; p; _] ->
-    let button_a = extract_nums a in
-    let button_b = extract_nums b in
-    let target = extract_nums p in
-    Some (button_a, button_b, target)
-  | _ -> failwith "Expecting input to have a multiple of 4 lines"
+let parse_input input =
+  List.filter_map (fun lines ->
+    match lines with
+    | [a; b; p; _] ->
+      let button_a = extract_nums a in
+      let button_b = extract_nums b in
+      let target = extract_nums p in
+      Some (button_a, button_b, target)
+    | _ -> failwith "Expecting input to have a multiple of 4 lines"
   ) @@ List.ntake 4 input
 
 (* Use Cramers Rule to solve equations *)
