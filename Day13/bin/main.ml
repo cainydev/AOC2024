@@ -36,8 +36,7 @@ let part1 =
 let part2 =
   lines_of_file "input.txt"
   |> parse_input
-  |> List.map (fun (a, b, (tx, ty)) ->
-      (a, b, (tx +. 10000000000000., ty +. 10000000000000.)))
+  |> List.map (Tuple3.map3 (Tuple2.mapn ((+.) 10000000000000.)))
   |> List.filter_map (Tuple3.uncurry solve_eq)
   |> List.map (fun (a, b) -> a * 3 + b)
   |> List.sum
