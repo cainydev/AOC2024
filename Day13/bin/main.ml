@@ -2,10 +2,12 @@ open Batteries
 open Line_oriented
 
 let extract_nums s =
-  let filtered = String.filter (fun c -> Char.is_digit c || c = ',') s in
+  let filtered = String.filter (fun c ->
+    Char.is_digit c || c = ',') s
+  in
   let nums = String.split_on_char ',' filtered in
   if List.length nums <> 2
-  then failwith "Only can do pairs"
+  then failwith "Only can do pairs of 2 numbers"
   else (float_of_string @@ List.at nums 0, float_of_string @@ List.at nums 1)
 
 let parse_input input = List.filter_map (fun lines ->
@@ -15,7 +17,7 @@ let parse_input input = List.filter_map (fun lines ->
     let button_b = extract_nums b in
     let target = extract_nums p in
     Some (button_a, button_b, target)
-  | _ -> None
+  | _ -> failwith "Expecting input to have a multiple of 4 lines"
   ) @@ List.ntake 4 input
 
 (* Use Cramers Rule to solve equations *)
@@ -29,17 +31,15 @@ let solve_eq (ax, ay) (bx, by) (px, py) =
 let part1 =
   lines_of_file "input.txt"
   |> parse_input
-  |> List.filter_map (Tuple3.uncurry solve_eq)
-  |> List.map (fun (a, b) -> a * 3 + b)
-  |> List.sum
+  |> List.filter_map @@ Tuple3.uncurry solve_eq
+  |> List.fold_left (fun s (a, b) -> a * 3 + b + s) 0 
 
 let part2 =
   lines_of_file "input.txt"
   |> parse_input
-  |> List.map (Tuple3.map3 (Tuple2.mapn ((+.) 10000000000000.)))
-  |> List.filter_map (Tuple3.uncurry solve_eq)
-  |> List.map (fun (a, b) -> a * 3 + b)
-  |> List.sum
+  |> List.map @@ Tuple3.map3 @@ Tuple2.mapn @@ (+.) 1e13
+  |> List.filter_map @@ Tuple3.uncurry solve_eq
+  |> List.fold_left (fun s (a, b) -> a * 3 + b + s) 0
 
 let () =
   Printf.printf "Part 1: %i\n" part1;
