@@ -1,0 +1,4 @@
+(executable
+ (public_name Day13)
+ (name main)
+ (libraries Day13 batteries line_oriented))

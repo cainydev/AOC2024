@@ -1,0 +1,18 @@
+(lang dune 3.17)
+
+(name Day13)
+
+(generate_opam_files true)
+
+(source
+ (github cainytheslave/AOC2024))
+
+(authors "John Wagner <info@techbra.in>")
+
+(license LICENSE)
+
+(package
+ (name Day13)
+ (synopsis "AOC Solution for day 13")
+ (description "")
+ (depends ocaml batteries))
