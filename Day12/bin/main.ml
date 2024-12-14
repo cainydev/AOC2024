@@ -3,10 +3,6 @@ open Line_oriented
 
 module CharMap = Map.Make(Char)
 
-let print_return m =
-  CharMap.iter (Printf.printf "%c -> %i, ") m;
-  print_endline ""
-
 let file_to_grid filename =
   let lines =
     lines_of_file filename
@@ -15,11 +11,6 @@ let file_to_grid filename =
   in
   let h, w = Array.length lines, Array.length (lines.(0)) in
   Grid.init h w (fun (y, x) -> lines.(y).(x))
-
-let to_crops_map grid =
-  Grid.fold (fun p c ->
-    CharMap.modify_def [] c (fun ps -> p::ps) 
-  ) grid CharMap.empty
 
 let flood_fill grid start_pos =
   let value = Grid.get grid start_pos in
@@ -39,7 +30,7 @@ let flood_fill grid start_pos =
   in dfs start_pos
 
 let part1 =
-  let grid = file_to_grid "test.txt" in
+  let grid = file_to_grid "input.txt" in
   Grid.fold (fun pos _crop (vs, sum) ->
     if Set.mem pos vs
     then (vs, sum)
@@ -77,10 +68,10 @@ let find_edges shape =
   in
   
   let rec connection (from_x, from_y) to_pos (dx, dy) (clear_x, clear_y) =
-    if (from_x, from_y) = to_pos then true else
-    if is_in_shape (from_x + dx, from_y + dy) && (not (
-      is_in_shape (from_x + dx + clear_x, from_y + dy + clear_y) 
-    ))
+    if (from_x, from_y) = to_pos then true
+    else if
+      is_in_shape (from_x + dx, from_y + dy) &&
+      not @@ is_in_shape (from_x + dx + clear_x, from_y + dy + clear_y)
     then connection (from_x + dx, from_y + dy) to_pos (dx, dy) (clear_x, clear_y)
     else false
   in
@@ -104,17 +95,13 @@ let find_edges shape =
 
 let part2 =
   let grid = file_to_grid "input.txt" in
-  Grid.fold (fun pos crop (vs, sum) ->
+  Grid.fold (fun pos _crop (vs, sum) ->
     if Set.mem pos vs
     then (vs, sum)
     else
       let all_pos = flood_fill grid pos in
       let area = List.length all_pos in
       let sides = find_edges all_pos |> List.length in
-      (*List.iter (fun ((x1, y1), (x2, y2)) -> 
-        Printf.printf "(%d, %d) -> (%d, %d)\n" x1 y1 x2 y2
-      ) (find_edges all_pos);*)
-      Printf.printf "%c has area %i and %i sides so fence %i\n" crop area sides (area * sides);
       (Set.add_seq (Seq.of_list all_pos) vs, sum + area * sides)
   ) grid (Set.empty, 0) |> Tuple2.second
 
