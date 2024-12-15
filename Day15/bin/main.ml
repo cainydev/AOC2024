@@ -28,34 +28,41 @@ let rec move map (y, x) dir =
           true)
         else false
 
-let part1 =
-  let lines = Line_oriented.lines_of_file "input.txt" in
-  let map =
-    lines
+let parse_input input =
+  let map = input
     |> List.take_while (flip String.contains '#')
     |> Array.of_list % List.map (Array.of_list % String.to_list)
     |> Grid.copy
-  in
-  let dirs =
-    lines
+  in let dirs = input
     |> List.drop_while (not % flip String.contains '<')
-    |> String.concat "" 
-  in
-  
-  let player_pos = Grid.find (fun _ c -> c = '@') in
+    |> String.concat ""
+    |> String.to_list
+    |> List.map (fun dir -> match dir with
+        | '^' -> Grid.north
+        | '>' -> Grid.east
+        | 'v' -> Grid.south
+        | '<' -> Grid.west
+        | _ -> failwith "Unknown direction")
+  in (map, dirs)
 
-  String.iter (fun c ->
-    ignore @@ move map (player_pos map) @@ match c with
-    | '^' -> Grid.north
-    | '>' -> Grid.east
-    | 'v' -> Grid.south
-    | '<' -> Grid.west
-    | _ -> failwith "Unknown direction"
-  ) dirs;
+let find_player_pos map = Grid.find (fun _ c -> c = '@') map
+
+let simulate map dirs =
+  let player_pos = ref @@ find_player_pos map in
+  List.iter (fun dir ->
+    if move map !player_pos dir
+    then player_pos := dir !player_pos
+  ) dirs
+
+let part1 =
+  let lines = Line_oriented.lines_of_file "input.txt" in
+  let (map, dirs) = parse_input lines in (
+
+  simulate map dirs;
 
   Grid.fold (fun (y, x) c acc ->
     if c = 'O' then acc + (100 * y) + x else acc
-  ) map 0
+  ) map 0)
 
 let double_width map =
   Array.map (fun line ->
@@ -73,33 +80,14 @@ let double_width map =
 
 let part2 = 
   let lines = Line_oriented.lines_of_file "input.txt" in
-  let map =
-    lines
-    |> List.take_while (flip String.contains '#')
-    |> Array.of_list % List.map (Array.of_list % String.to_list)
-    |> double_width
-    |> Grid.copy
-  in
-  let dirs =
-    lines
-    |> List.drop_while (not % flip String.contains '<')
-    |> String.concat "" 
-  in
-  
-  let player_pos = Grid.find (fun _ c -> c = '@') in
+  let (map, dirs) = parse_input lines in
+  let doubled_map = double_width map in
 
-  String.iter (fun c ->
-    ignore @@ move map (player_pos map) @@ match c with
-    | '^' -> Grid.north
-    | '>' -> Grid.east
-    | 'v' -> Grid.south
-    | '<' -> Grid.west
-    | _ -> failwith "Unknown direction"
-  ) dirs;
-  
+  simulate doubled_map dirs;
+
   Grid.fold (fun (y, x) c acc ->
     if c = '[' then acc + (100 * y) + x else acc
-  ) map 0
+  ) doubled_map 0
 
 let () =
   Printf.printf "Part 1: %i\n" part1;
