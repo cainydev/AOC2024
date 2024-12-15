@@ -64,24 +64,23 @@ let part1 =
     if c = 'O' then acc + (100 * y) + x else acc
   ) map 0)
 
-let double_width map =
-  Array.map (fun line ->
-    line
-    |> Array.to_list
-    |> List.concat_map (fun c ->
-        match c with
-        | '#' -> ['#'; '#']
-        | 'O' -> ['['; ']']
-        | '.' -> ['.'; '.']
-        | '@' -> ['@'; '.']
-        | _ -> failwith "Impossible character in map")
-    |> Array.of_list
-  ) map
-
 let part2 = 
   let lines = Line_oriented.lines_of_file "input.txt" in
   let (map, dirs) = parse_input lines in
-  let doubled_map = double_width map in
+  let doubled_map =
+    Array.map (fun line ->
+      line
+      |> Array.to_list
+      |> List.concat_map (fun c ->
+          match c with
+          | '#' -> ['#'; '#']
+          | 'O' -> ['['; ']']
+          | '.' -> ['.'; '.']
+          | '@' -> ['@'; '.']
+          | _ -> failwith "Impossible character in map")
+      |> Array.of_list
+    ) map
+  in
 
   simulate doubled_map dirs;
 
