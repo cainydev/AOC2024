@@ -37,42 +37,37 @@ let parse_input input =
     |> List.drop_while (not % flip String.contains '<')
     |> String.concat ""
     |> String.to_list
-    |> List.map (fun dir -> match dir with
-        | '^' -> Grid.north
-        | '>' -> Grid.east
-        | 'v' -> Grid.south
-        | '<' -> Grid.west
+    |> List.map (function
+        | '^' -> Grid.north | '>' -> Grid.east
+        | 'v' -> Grid.south | '<' -> Grid.west
         | _ -> failwith "Unknown direction")
   in (map, dirs)
 
-let find_player_pos map = Grid.find (fun _ c -> c = '@') map
-
 let simulate map dirs =
-  let player_pos = ref @@ find_player_pos map in
+  let player_pos = ref @@ Grid.find (const @@ (=) '@') map in
   List.iter (fun dir ->
     if move map !player_pos dir
     then player_pos := dir !player_pos
   ) dirs
 
 let part1 =
-  let lines = Line_oriented.lines_of_file "input.txt" in
-  let (map, dirs) = parse_input lines in (
+  let lines = Line_oriented.lines_of_file "test.txt" in
+  let (map, dirs) = parse_input lines in
 
   simulate map dirs;
 
   Grid.fold (fun (y, x) c acc ->
     if c = 'O' then acc + (100 * y) + x else acc
-  ) map 0)
+  ) map 0
 
 let part2 = 
-  let lines = Line_oriented.lines_of_file "input.txt" in
+  let lines = Line_oriented.lines_of_file "test.txt" in
   let (map, dirs) = parse_input lines in
   let doubled_map =
     Array.map (fun line ->
       line
       |> Array.to_list
-      |> List.concat_map (fun c ->
-          match c with
+      |> List.concat_map (function
           | '#' -> ['#'; '#']
           | 'O' -> ['['; ']']
           | '.' -> ['.'; '.']

@@ -1,5 +1,4 @@
 open Batteries
-open Line_oriented
 
 let parse_tuple str =
   match String.split_on_char ',' str with
@@ -44,17 +43,19 @@ let part1 =
   let (w, h) = (101, 103) in
   let inputfile = "input.txt" in
 
-  lines_of_file inputfile
+  Line_oriented.lines_of_file inputfile
   |> List.map parse_robot
   |> List.map @@ simulate_robot 100 (w, h)
   |> safety_factor (w, h)
   
-
 let part2 = 
   let (w, h) = (101, 103) in
   let inputfile = "input.txt" in
 
-  let robots = lines_of_file inputfile |> List.map parse_robot in
+  let robots =
+    Line_oriented.lines_of_file inputfile
+    |> List.map parse_robot
+  in
   let measurements = Array.make 10001 0 in
 
   for seconds = 0 to 10000 do
