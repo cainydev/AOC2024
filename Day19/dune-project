@@ -1,6 +1,6 @@
-(lang dune 3.19)
+(lang dune 3.17)
 
-(name Day17)
+(name Day19)
 
 (generate_opam_files true)
 
@@ -12,7 +12,7 @@
 (license LICENSE)
 
 (package
- (name Day17)
- (synopsis "AOC Solution for day 17")
+ (name Day19)
+ (synopsis "AOC Solution for day 19")
  (description "")
  (depends ocaml batteries))

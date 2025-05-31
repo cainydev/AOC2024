@@ -1,4 +1,4 @@
 (executable
  (public_name Day18)
  (name main)
- (libraries Day18))
+ (libraries Day18 batteries psq grid line_oriented))
