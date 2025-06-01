@@ -1,0 +1,18 @@
+(lang dune 3.19)
+
+(name Day23)
+
+(generate_opam_files true)
+
+(source
+ (github cainydev/AOC2024))
+
+(authors "John Wagner <info@techbra.in>")
+
+(license LICENSE)
+
+(package
+ (name Day23)
+ (synopsis "AOC Solution for day 23")
+ (description "")
+ (depends ocaml batteries line_oriented grid psq))

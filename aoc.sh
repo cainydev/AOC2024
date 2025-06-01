@@ -55,9 +55,13 @@ cd "Day${day}"
 aocdl -year $year -day $day
 
 rm ./dune-project
-sed "s/%DAY%/$day/g" ../dune-template > ./dune-project
+sed "s/%DAY%/$day/g" ../dune-project-template > ./dune-project
 
-cp ../template.ml bin/main.ml
+rm ./bin/dune
+sed "s/%DAY%/$day/g" ../dune-template > ./bin/dune
+
+rm ./bin/main.ml
+sed "s/%DAY%/$day/g" ../template.ml > ./bin/main.ml
 
 dune exec Day$day
 

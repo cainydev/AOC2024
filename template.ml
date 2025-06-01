@@ -1,18 +1,17 @@
-let read_lines file =
-  let ic = open_in file in
-  let rec read_lines_rec acc = 
-    try
-      let line = input_line ic in
-      read_lines_rec (line :: acc)
-    with End_of_file ->
-      close_in ic;
-      List.rev acc
-  in read_lines_rec []
+open Batteries
 
-let part1 = read_lines "input.txt" |> List.length
+let time f x =
+    let t = Sys.time() in
+    let fx = f x in
+    (fx, Sys.time() -. t)
 
-let part2 = 0
+let uncurry f = fun (x, y) -> f x y
+
+let part1 () = Line_oriented.lines_of_file "test.txt" |> List.length
+
+let part2 () = Line_oriented.lines_of_file "test.txt" |> List.length
 
 let () =
-  Printf.printf "Part 1: %i\n" part1;
-  Printf.printf "Part 2: %i\n" part2
+  Printf.printf "\nDay %DAY%\n%!";
+  (uncurry @@ Printf.printf "Part 1: %i in %fs\n") (time part1 ());
+  (uncurry @@ Printf.printf "Part 2: %i in %fs\n") (time part2 ())
