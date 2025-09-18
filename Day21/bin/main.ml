@@ -39,41 +39,47 @@ let press (cx, cy) (tx, ty) (fx, fy) : string =
   | None ->
     let (x, y) = (tx - cx, ty - cy) in
     let buf = Buffer.create 10 in
-
-    let add dir count =
-      for _ = 1 to count do Buffer.add_char buf dir done
+    
+    let up c = for _ = 1 to c do Buffer.add_char buf '^' done
+    and down c = for _ = 1 to c do Buffer.add_char buf 'v' done
+    and right c = for _ = 1 to c do Buffer.add_char buf '>' done
+    and left c = for _ = 1 to c do Buffer.add_char buf '<' done
     in
 
     if x = 0 || y = 0 then (
-      add '>' (max 0 x);
-      add '^' (max 0 (-y));
-      add 'v' (max 0 y);
-      add '<' (max 0 (-x));
+      right (max 0 x);
+      up (max 0 (-y));
+      down (max 0 y);
+      left (max 0 (-x));
     ) else (
       match x, y with
       | x, y when x < 0 && y < 0 ->
-          if fy = cy && fx < cx && fx >= tx then (
-            add '^' (-y); add '<' (-x)
-          ) else (
-            add '<' (-x); add '^' (-y)
+          if fy = cy && fx < cx && fx >= tx
+          then ((* blocked *)
+            up (-y); left (-x)
+          ) else ((* we prefer *)
+            left (-x); up (-y)
           )
       | x, y when x < 0 && y > 0 ->
-          if fy = cy && fx < cx && fx >= tx then (
-            add 'v' y; add '<' (-x)
-          ) else (
-            add '<' (-x); add 'v' y
+          if fy = cy && fx < cx && fx >= tx
+          then ((* blocked *)
+            down y; left (-x)
+          ) else ((* we prefer *)
+            left (-x); down y
           )
       | x, y when x > 0 && y > 0 ->
-          if fx = cx && fy > cy && fy <= ty then (
-            add '>' x; add 'v' y
-          ) else (
-            add 'v' y; add '>' x
+          if fx = cx && fy > cy && fy <= ty
+          then ((* blocked *)
+            right x; down y
+          ) else ((* we prefer *)
+            down y; right x
           )
       | x, y when x > 0 && y < 0 ->
-          if fx = cx && fy < cy && fy >= ty then (
-            add '>' x; add '^' (-y)
-          ) else (
-            add '^' (-y); add '>' x
+          if fx = cx && fy < cy && fy >= ty
+          then ((* blocked *)
+            right x; up (-y)
+          ) else ((* we prefer *)
+            up (-y); right x
           )
       | _ -> failwith "Unexpected direction"
     );
@@ -124,7 +130,7 @@ let length depth code =
   in aux depth code
 
 let part1 () =
-  let codes = Line_oriented.lines_of_file "input.txt"
+  let codes = Line_oriented.lines_of_file "test.txt"
     |> List.map String.trim in
   
   codes

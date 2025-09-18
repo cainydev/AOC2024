@@ -1,5 +1,12 @@
 open Batteries
 
+let time f x =
+    let t = Sys.time() in
+    let fx = f x in
+    (fx, Sys.time() -. t)
+
+let uncurry f = fun (x, y) -> f x y
+
 let read_lines file =
   let ic = open_in file in
   let rec read_lines_rec acc = 
@@ -47,7 +54,7 @@ let find_visited_squares m =
     step_and_collect (Set.singleton start_pos) start_state
     |> Set.to_list
 
-let part1 =
+let part1 () =
   let m = read_lines "input.txt" |> to_matrix in
   List.length (find_visited_squares m)
 
@@ -68,7 +75,7 @@ let replace_in_matrix matrix (x, y) new_char =
   new_matrix.(y).(x) <- new_char;
   new_matrix
 
-let part2 =
+let part2 () =
   let m = read_lines "input.txt" |> to_matrix in
   let start_pos = find_first_in_matrix '^' m in
   let start_state = start_pos, (0, -1) in
@@ -78,5 +85,6 @@ let part2 =
   ) visited
 
 let () =
-  Printf.printf "Part 1: %i\n" part1;
-  Printf.printf "Part 2: %i\n" part2
+  Printf.printf "\nDay 24\n";
+  (uncurry @@ Printf.printf "Part 1: %d in %fs\n") (time part1 ());
+  (uncurry @@ Printf.printf "Part 2: %d in %fs\n") (time part2 ())

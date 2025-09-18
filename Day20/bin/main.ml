@@ -52,7 +52,7 @@ let a_star
 
 let manhattan (x1, y1) (x2, y2) = abs (x1 - x2) + abs (y1 - y2)
 
-let part1 =
+let part1 () =
   let grid =
     Line_oriented.lines_of_file "input.txt"
     |> Array.of_list % List.map (Array.of_list % String.to_list)
@@ -61,24 +61,12 @@ let part1 =
   let start_pos = Grid.find (const @@ (=) 'S') grid in
   let end_pos = Grid.find (const @@ (=) 'E') grid in
   let is_end (pos, _) = pos = end_pos
-  and get_next forbidden_cheats = fun (pos, cheat) ->
-    match cheat with
-    | Some _ -> Grid.fold4 (fun n_pos c ns ->
-        if c <> '#' then ((n_pos, cheat), 1) :: ns else ns
-      ) grid pos []
-    | None ->  Grid.fold4 (fun n_pos c ns ->
-        if c <> '#' then ((n_pos, cheat), 1) :: ns
-        else
-          if Set.mem n_pos forbidden_cheats then ns else
-          let dir = n_pos #- pos in
-          let cheat_target = pos #+ dir #+ dir in
-          if Grid.inside grid cheat_target && Grid.get grid cheat_target <> '#' then
-            ((cheat_target, Some n_pos), 2) :: ns
-          else ns
-      ) grid pos []
-  and heuristic (pos, _) = manhattan pos end_pos in
-  
-  let g_score = match a_star (start_pos, Some (0, 0)) is_end (get_next Set.empty) heuristic with
+  and get_next (pos, cheat) = Grid.fold4 (fun n_pos c ns ->
+    if c <> '#' then ((n_pos, cheat), 1) :: ns else ns
+  ) grid pos []
+  in
+
+  let g_score = match a_star (start_pos, Some (0, 0)) is_end get_next (const 0) with
   | None -> failwith "Couldn't find baseline route"
   | Some (_, g_score, _) -> g_score
   in
@@ -94,7 +82,7 @@ let part1 =
     ) 0 [Grid.north; Grid.east; Grid.south; Grid.west] 
   ) g_score 0 
 
-let part2 =
+let part2 () =
   let grid =
     Line_oriented.lines_of_file "input.txt"
     |> Array.of_list % List.map (Array.of_list % String.to_list)
@@ -103,38 +91,29 @@ let part2 =
   let start_pos = Grid.find (const @@ (=) 'S') grid in
   let end_pos = Grid.find (const @@ (=) 'E') grid in
   let is_end (pos, _) = pos = end_pos
-  and get_next forbidden_cheats = fun (pos, cheat) ->
-    match cheat with
-    | Some _ -> Grid.fold4 (fun n_pos c ns ->
-        if c <> '#' then ((n_pos, cheat), 1) :: ns else ns
-      ) grid pos []
-    | None ->  Grid.fold4 (fun n_pos c ns ->
-        if c <> '#' then ((n_pos, cheat), 1) :: ns
-        else
-          if Set.mem n_pos forbidden_cheats then ns else
-          let dir = n_pos #- pos in
-          let cheat_target = pos #+ dir #+ dir in
-          if Grid.inside grid cheat_target && Grid.get grid cheat_target <> '#' then
-            ((cheat_target, Some n_pos), 2) :: ns
-          else ns
-      ) grid pos []
-  and heuristic (pos, _) = manhattan pos end_pos in
-  
-  let g_score = match a_star (start_pos, Some (0, 0)) is_end (get_next Set.empty) heuristic with
+  and get_next (pos, cheat) = Grid.fold4 (fun n_pos c ns ->
+    if c <> '#' then ((n_pos, cheat), 1) :: ns else ns
+  ) grid pos []
+  in 
+
+  let path = match a_star (start_pos, Some (0, 0)) is_end get_next (const 0) with
   | None -> failwith "Couldn't find baseline route"
-  | Some (_, g_score, _) -> g_score
+  | Some (_, _, path) -> Array.of_list path 
   in
   
-  StateMap.fold (fun state cost acc ->
-    let p1, cheat = state in
-    StateMap.filter (fun (p2, _) c ->
-      let d = manhattan p1 p2
-      in d <= 20 && c - cost - d >= 100
-    ) g_score
-    |> StateMap.cardinal
-    |> (+) acc
-  ) g_score 0 
+
+  let n = Array.length path in
+  Array.fold_lefti (fun acc i (p1, _) ->
+    let count = ref 0 in
+    for j = i + 20 to n - 1 do
+      let (p2, _) = path.(j) in
+      let d = manhattan p1 p2 in
+      if d <= 20 && (j - i - d) >= 100 then incr count
+    done;
+    acc + !count
+  ) 0 path
 
 let () =
-  Printf.printf "\nPart 1: %i\n" part1;
-  Printf.printf "Part 2: %i\n" part2
+  Printf.printf "\nPart 1: %i\n" (part1 ());
+  Printf.printf "Part 2: %i\n" (part2 ());
+

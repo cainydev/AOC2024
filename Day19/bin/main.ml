@@ -1,6 +1,6 @@
-open Batteries
+open Base
 
-let prefix_table = Hashtbl.create 1_000_000
+let prefix_table = Hashtbl.create (module Int)
 
 let rec is_prefix_of str prefix =
   if Hashtbl.mem prefix_table (str, prefix) then Hashtbl.find prefix_table (str, prefix) else
